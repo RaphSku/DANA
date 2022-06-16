@@ -17,16 +17,19 @@ enable_testing()
 include_directories(./include)
 
 add_executable(
-  UT_FileScheduler
-  ./tests/UT_FileScheduler.cc
+  UT_Run
+  ./tests/UT_Run.cc
   ./libs/FileScheduler.cpp
   ./libs/FileScraper.cpp
+  ./libs/Logger.cpp
 )
 
 target_link_libraries(
-  UT_FileScheduler
+  UT_Run  
   gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(UT_FileScheduler)
+gtest_discover_tests(
+  UT_Run
+)

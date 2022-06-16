@@ -1,9 +1,3 @@
-#include <stdexcept>
-#include <chrono>
-#include <filesystem>
-#include <regex>
-#include <sstream>
-
 #include "../include/FileScraper.h"
 
 
@@ -13,9 +7,10 @@ namespace Scraper {
     /////////////////////////////////////////////////////////////
 
     FileScraper::FileScraper(const Dir& directory, const int& id) {
-        if (directory.pathToDir.empty()) {
+        if (!std::filesystem::exists(directory.pathToDir)) {
             throw std::invalid_argument("Directory does not contain a path!");
         }
+            
         m_dirToScrape = directory;
         m_workerID    = id;
     }
@@ -24,29 +19,18 @@ namespace Scraper {
         auto start = std::chrono::high_resolution_clock::now();
 
         std::string path = m_dirToScrape.pathToDir;
-        for (auto& entry : std::filesystem::directory_iterator(path)) {
-            std::stringstream ss;
-            ss << entry;
-            std::string entry_to_string;
-            ss << entry_to_string;
-
-            std::regex  name_rx("^\w*");
-            std::smatch name_match;
-            std::regex_search(entry_to_string, name_match, name_rx);
-            std::string name         = name_match.str(1);
-
-            std::regex  suffix_rx("\.[a-z]{3}$");
-            std::smatch suffix_match;
-            std::regex_search(entry_to_string, suffix_match, suffix_rx);
-            std::string suffix       = suffix_match.str(1);
+        for (const auto& entry : std::filesystem::directory_iterator(path)) {
+            std::string filePath  = entry.path();
+            std::string fileName  = getLastToken(filePath, "/");
+            std::string name      = evaluateRegex(fileName, std::regex("(\\w*)"));
+            std::string suffix    = evaluateRegex(fileName, std::regex("(\\.[a-z]*$)"));
             if (suffix.empty()) {
                 continue;
             }
 
             std::string location     = path;
             float       size_of_file = entry.file_size();
-            File file(name, suffix, location, size_of_file);
-            m_scrapedFiles.push_back(file);
+            m_scrapedFiles.push_back(File(name, suffix, location, size_of_file));
         }
 
         auto end   = std::chrono::high_resolution_clock::now();
@@ -63,5 +47,27 @@ namespace Scraper {
 
     int FileScraper::getID() const {
         return m_workerID;
+    }
+
+    /////////////////////////////////////////////////////////////
+    // File Scraper Class Implementation (private methods)
+    /////////////////////////////////////////////////////////////
+
+    std::string FileScraper::evaluateRegex(const std::string input, const std::regex regex) const {
+        std::smatch match;
+        std::regex_search(input, match, regex);
+        
+        return match.str(1);
+    }
+
+    std::string FileScraper::getLastToken(const std::string input, const std::string delimiter) const {
+        int start = 0;
+        int end   = input.find(delimiter);
+        while (end != std::string::npos) {
+            start = end + delimiter.length();
+            end   = input.find(delimiter, start);
+        }
+
+        return input.substr(start, end);
     }
 }

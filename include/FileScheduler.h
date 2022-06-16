@@ -1,3 +1,4 @@
+#pragma once
 #ifndef FILESCHEDULER_H_
 #define FILESCHEDULER_H_
 
@@ -9,9 +10,11 @@
 #include <memory>
 #include <fstream>
 #include <chrono>
+#include "date.h"
+
 #include "CustomTypes.h"
 #include "FileScraper.h"
-#include "date.h"
+#include "Logger.h"
 
 
 namespace Scheduler {
@@ -21,8 +24,8 @@ namespace Scheduler {
 
     class InterfaceFileScheduler {
         /* 
-        This Interface introduces the following methods and the following tasks:
-            1) setPaths which sets the Paths for scraping
+        Interface for the FileScheduler which should implement at least
+        the run method with a specified timeout. 
         */
 
         public:
@@ -46,17 +49,22 @@ namespace Scheduler {
             bool run(int& timeout) override;
             void registerDirs(const std::vector<Dir> dirs);
 
-            static std::unique_ptr<FileScheduler> getInstance();
+            static FileScheduler* getInstance();
         
         protected:
             FileScheduler();
+            ~FileScheduler();
 
         private:
-            static std::unique_ptr<FileScheduler> m_instance;
+            void startCollecting(const int& timeout);
+            void deployFileScrapers();
+
+            static FileScheduler* m_instance;
 
             std::deque<Dir>                     m_registeredDirs;
             std::map<int, Scraper::FileScraper> m_fileScrapers;
             std::map<int, int>                  m_numberOfTimeOuts;
+            Logging::TableLogger                m_logger;
     };
 }
 

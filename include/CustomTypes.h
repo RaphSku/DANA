@@ -1,8 +1,10 @@
+#pragma once
 #ifndef CUSTOMTYPES_H_
 #define CUSTOMTYPES_H_
 
 #include <vector>
 #include <string>
+
 
 /////////////////////////////////////////////////////////////
 // New Type Definitions
@@ -16,7 +18,7 @@ struct Dir {
     std::string pathToDir;
 
     Dir() {}
-    Dir(std::string& path)
+    Dir(std::string path) 
         : pathToDir(path) {}
 };
 

@@ -8,57 +8,8 @@ namespace Scheduler {
 
     bool FileScheduler::run(int& timeout) {
         // for every dir in m_registeredDirs, a FileScraper should be deployed
-        for (auto& dir : m_registeredDirs) {
-            bool successfulInitialized = false;
-            int id = 0;
-            while (successfulInitialized) {
-                if (m_fileScrapers.find(id) == m_fileScrapers.end()) {
-                    Scraper::FileScraper fileScraper(dir, id);
-                    m_fileScrapers.emplace(id, fileScraper);
-                    m_numberOfTimeOuts.emplace(id, 0);
-                    successfulInitialized = true;
-                }
-                id++;
-            }
-            
-            std::string now = date::format("%F %T", std::chrono::system_clock::now());
-            std::ofstream register_filescraper;
-            register_filescraper.open ("../data/deployed_filescrapers.txt", std::ios::app);
-            register_filescraper << now << " | " << "     " << id << "      " << " | " << "Registered" << "  | " 
-                                 << "     " <<  0 << "    " 
-                                 << " | " << "       " << 0 << "        ";
-            register_filescraper.close();
-        }
-
-        for (auto& [id, scraper] : m_fileScrapers) {
-            std::string now = date::format("%F %T", std::chrono::system_clock::now());
-            std::ofstream register_filescraper;
-            register_filescraper.open ("../data/deployed_filescrapers.txt", std::ios::app);
-            register_filescraper << now << " | " << "     " << id << "      " << " | " << " Running  " << "  | " 
-                                 << "     " <<  0 << "    " 
-                                 << " | " << "       " << 0 << "        ";
-            register_filescraper.close();
-
-            auto start    = std::chrono::high_resolution_clock::now();
-            bool timedOut = scraper.collect(timeout);
-            auto end      = std::chrono::high_resolution_clock::now();
-            auto time     = std::chrono::duration_cast<std::chrono::seconds>(end - start).count(); 
-
-            if (timedOut) {
-                if (m_numberOfTimeOuts.find(id) != m_numberOfTimeOuts.end()) {
-                    m_numberOfTimeOuts[id]++;
-                }
-            }
-
-            now = date::format("%F %T", std::chrono::system_clock::now());
-            register_filescraper.open ("../data/deployed_filescrapers.txt", std::ios::app); 
-            register_filescraper << now << " | " << "     " << id << "      " << " | " << " Finished " << "  | " 
-                                 << "     " <<  m_numberOfTimeOuts[id] << "    " 
-                                 << " | " << "       " << time << "        ";
-            register_filescraper.close();
-
-            std::deque<File> output = scraper.getFiles(); 
-        }
+        deployFileScrapers();
+        startCollecting(timeout);
 
         return true;
     }
@@ -72,11 +23,11 @@ namespace Scheduler {
         }
     }
 
-    std::unique_ptr<FileScheduler> FileScheduler::getInstance() {
+    FileScheduler* FileScheduler::getInstance() {
         if (m_instance == nullptr) {
-            m_instance = std::unique_ptr<FileScheduler>(new FileScheduler);
+            m_instance = new FileScheduler();
         }
-        return std::move(m_instance);
+        return m_instance;
     }
 
     /////////////////////////////////////////////////////////////
@@ -84,28 +35,63 @@ namespace Scheduler {
     /////////////////////////////////////////////////////////////
 
     FileScheduler::FileScheduler() {
-        std::string label_timestamp             = "        Timestamp          ";
-        std::string label_idOfWorker            = "ID of Worker";
-        std::string label_status                = "   Status  ";
-        std::string label_timedOut              = "#Timed Out";
-        std::string label_collectionTime = "Collection Time";
+        m_logger = Logging::TableLogger("./deployed_filescrapers.txt", 5, 35, {"Timestamp", "ID of Worker", "Status", "#Timed Out", "Collection Time"});
+    }
 
-        std::ofstream register_filescraper;
-        register_filescraper.open ("../data/deployed_filescrapers.txt");
-        register_filescraper << label_timestamp << " | " << label_idOfWorker << " | " << label_status << " | " << label_timedOut
-                             << " | " << label_collectionTime << "\n";
-        register_filescraper << "---------------------------------------------------------------------------------------" << "\n";
-        register_filescraper.close();
+    FileScheduler::~FileScheduler() {
+        delete m_instance;
     }
 
     /////////////////////////////////////////////////////////////
     // File Scheduler Class Implementation (private methods)
     /////////////////////////////////////////////////////////////
 
+    void FileScheduler::deployFileScrapers() {
+        std::vector<std::string> messages;
+        for (auto& dir : m_registeredDirs) {
+            int id = 0;
+            if (m_fileScrapers.find(id) == m_fileScrapers.end()) {
+                m_fileScrapers.emplace(id, Scraper::FileScraper(dir, id));
+                m_numberOfTimeOuts.emplace(id, 0);
+            }
+            
+            std::string now = date::format("%F %T", std::chrono::system_clock::now());
+            messages        = {now, std::to_string(id), "Ready", "0", "0"};
+            m_logger.log(messages);
+            id++;
+        }
+    }
+
+    void FileScheduler::startCollecting(const int& timeout) {
+        std::vector<std::string> messages;
+        for (auto& [id, scraper] : m_fileScrapers) {
+            std::string now = date::format("%F %T", std::chrono::system_clock::now());
+            messages = {now, std::to_string(id), "Working", "0", "0"};
+            m_logger.log(messages);
+
+            auto start    = std::chrono::high_resolution_clock::now();
+            bool timedOut = scraper.collect(timeout);
+            auto end      = std::chrono::high_resolution_clock::now();
+            auto time     = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count(); 
+
+            if (timedOut) {
+                if (m_numberOfTimeOuts.find(id) != m_numberOfTimeOuts.end()) {
+                    m_numberOfTimeOuts[id]++;
+                }
+            }
+
+            now      = date::format("%F %T", std::chrono::system_clock::now());
+            messages = {now, std::to_string(id), "Terminated", std::to_string(m_numberOfTimeOuts[id]), std::to_string(time)};
+            m_logger.log(messages);
+
+            std::deque<File> output = scraper.getFiles(); 
+        }
+    }
+
 
     /////////////////////////////////////////////////////////////
     // File Scheduler Class Implementation (private variables)
     /////////////////////////////////////////////////////////////
 
-    std::unique_ptr<FileScheduler> FileScheduler::m_instance = nullptr;
+    FileScheduler* FileScheduler::m_instance = nullptr;
 }
