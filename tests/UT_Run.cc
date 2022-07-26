@@ -2,6 +2,9 @@
 #include "UT_Logger.cc"
 #include "UT_FileScheduler.cc"
 #include "UT_FileScraper.cc"
+#include "UT_Sink.cc"
+#include "UT_SinkHandler.cc"
+#include "IT_Pipeline.cc"
 
 
 int main(int argc, char **argv) {

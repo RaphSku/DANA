@@ -9,7 +9,16 @@ namespace Scheduler {
     bool FileScheduler::run(int& timeout) {
         // for every dir in m_registeredDirs, a FileScraper should be deployed
         deployFileScrapers();
-        startCollecting(timeout);
+        std::vector<File> files = startCollecting(timeout);
+
+        std::vector<std::thread> threads;
+        for (auto& [sinkType, sink] : m_sinks) {
+            threads.push_back(std::thread(&Sinks::Sink::depositFiles, sink, files));
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
 
         return true;
     }
@@ -20,6 +29,17 @@ namespace Scheduler {
                 continue;
             }
             m_registeredDirs.push_back(dir);
+        }
+    }
+
+    void FileScheduler::registerSinks(const std::vector<Sinks::Sink> sinks) {
+        for (auto& sink : sinks) {
+            SinkType sinkType = sink.getSinkType();
+            if (m_sinks.find(sinkType) != m_sinks.end()) {
+                //log something
+                continue;
+            }
+            m_sinks.emplace(std::make_pair(sinkType, sink));
         }
     }
 
@@ -62,8 +82,9 @@ namespace Scheduler {
         }
     }
 
-    void FileScheduler::startCollecting(const int& timeout) {
+    std::vector<File> FileScheduler::startCollecting(const int& timeout) {
         std::vector<std::string> messages;
+        std::vector<File>        files;
         for (auto& [id, scraper] : m_fileScrapers) {
             std::string now = date::format("%F %T", std::chrono::system_clock::now());
             messages = {now, std::to_string(id), "Working", "0", "0"};
@@ -85,7 +106,12 @@ namespace Scheduler {
             m_logger.log(messages);
 
             std::deque<File> output = scraper.getFiles(); 
+            for (auto& file : output) {
+                files.push_back(file);
+            }
         }
+
+        return files;
     }
 
 

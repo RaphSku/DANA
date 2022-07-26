@@ -79,3 +79,16 @@ TEST_F(FileSchedulerTest, Run_S01) {
 
   SUCCEED();
 }
+
+TEST_F(FileSchedulerTest, RegisterSinks_S01) {
+  SinkHandles::TXTSinkHandle txtSinkHandler("./");
+  SinkHandles::CSVSinkHandle csvSinkHandler("./");
+  
+  Sinks::Sink txtSink(txtSinkHandler);
+  Sinks::Sink csvSink(csvSinkHandler);
+
+  std::vector<Sinks::Sink> sinks{txtSink, csvSink};
+  m_fileScheduler->registerSinks(sinks);
+
+  SUCCEED();
+}

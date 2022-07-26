@@ -10,11 +10,13 @@
 #include <memory>
 #include <fstream>
 #include <chrono>
+#include <thread>
 #include "date.h"
 
 #include "CustomTypes.h"
 #include "FileScraper.h"
 #include "Logger.h"
+#include "./sinks/Sink.h"
 
 
 namespace Scheduler {
@@ -48,6 +50,7 @@ namespace Scheduler {
         public:
             bool run(int& timeout) override;
             void registerDirs(const std::vector<Dir> dirs);
+            void registerSinks(const std::vector<Sinks::Sink> sinks);
 
             static FileScheduler* getInstance();
         
@@ -56,15 +59,16 @@ namespace Scheduler {
             ~FileScheduler();
 
         private:
-            void startCollecting(const int& timeout);
+            std::vector<File> startCollecting(const int& timeout);
             void deployFileScrapers();
 
             static FileScheduler* m_instance;
 
-            std::deque<Dir>                     m_registeredDirs;
-            std::map<int, Scraper::FileScraper> m_fileScrapers;
-            std::map<int, int>                  m_numberOfTimeOuts;
-            Logging::TableLogger                m_logger;
+            std::deque<Dir>                         m_registeredDirs;
+            std::map<int, Scraper::FileScraper>     m_fileScrapers;
+            std::map<SinkType, Sinks::Sink>         m_sinks;
+            std::map<int, int>                      m_numberOfTimeOuts;
+            Logging::TableLogger                    m_logger;
     };
 }
 

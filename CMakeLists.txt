@@ -14,7 +14,10 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
-include_directories(./include)
+include_directories(
+  ./include
+  ./include/sinks
+)
 
 add_executable(
   UT_Run
@@ -22,6 +25,8 @@ add_executable(
   ./libs/FileScheduler.cpp
   ./libs/FileScraper.cpp
   ./libs/Logger.cpp
+  ./libs/Sink.cpp
+  ./libs/SinkHandle.cpp
 )
 
 target_link_libraries(

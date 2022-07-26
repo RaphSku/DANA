@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 
 /////////////////////////////////////////////////////////////
@@ -33,8 +34,17 @@ struct File {
     float       size_of_file;
 
     File() {}
-    File(std::string& name, std::string& suffix, std::string& location, float& size_of_file) 
+    File(std::string name, std::string suffix, std::string location, float size_of_file) 
         : name(name), suffix(suffix), location(location), size_of_file(size_of_file) {}
+};
+
+/////////////////////////////////////////////////////////////
+// Enumeration SinkTypes
+/////////////////////////////////////////////////////////////
+
+enum class SinkType {
+    TXT,
+    CSV
 };
 
 #endif
