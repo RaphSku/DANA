@@ -29,14 +29,14 @@ namespace Sinks {
             Sink(SinkHandles::InterfaceSinkHandle& sinkHandle);
             
             void depositFiles(const std::vector<File>& files);
-            SinkType getSinkType() const;
+            SinkTypes::Types getSinkType() const;
 
         private:
             SinkHandles::InterfaceSinkHandle& m_sinkHandle;
-            SinkType                          m_sinkType;
+            SinkTypes::Types                  m_sinkType;
 
-            std::map<std::string, SinkType> filesuffixToSinkType{{".txt", SinkType::TXT},
-                                                                 {".csv", SinkType::CSV}};
+            std::map<std::string, SinkTypes::Types> filesuffixToSinkType{{".txt", SinkTypes::Types::TXT},
+                                                                         {".csv", SinkTypes::Types::CSV}};
     };
 }
 

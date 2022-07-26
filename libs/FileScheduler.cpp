@@ -7,7 +7,6 @@ namespace Scheduler {
     /////////////////////////////////////////////////////////////
 
     bool FileScheduler::run(int& timeout) {
-        // for every dir in m_registeredDirs, a FileScraper should be deployed
         deployFileScrapers();
         std::vector<File> files = startCollecting(timeout);
 
@@ -34,9 +33,11 @@ namespace Scheduler {
 
     void FileScheduler::registerSinks(const std::vector<Sinks::Sink> sinks) {
         for (auto& sink : sinks) {
-            SinkType sinkType = sink.getSinkType();
+            SinkTypes::Types sinkType = sink.getSinkType();
             if (m_sinks.find(sinkType) != m_sinks.end()) {
-                //log something
+                std::string now                 = date::format("%F %T", std::chrono::system_clock::now());
+                std::vector<std::string> fields = {now, std::string("Sink of type " + SinkTypes::toString(sinkType) + " could not be found!")};
+                m_logger[LogTypes::ERROR].log(fields);
                 continue;
             }
             m_sinks.emplace(std::make_pair(sinkType, sink));
@@ -55,7 +56,8 @@ namespace Scheduler {
     /////////////////////////////////////////////////////////////
 
     FileScheduler::FileScheduler() {
-        m_logger = Logging::TableLogger("./deployed_filescrapers.txt", 5, 35, {"Timestamp", "ID of Worker", "Status", "#Timed Out", "Collection Time"});
+        m_logger[LogTypes::FILESCRAPER] = Logging::TableLogger("./deployed_filescrapers.txt", 5, 35, {"Timestamp", "ID of Worker", "Status", "#Timed Out", "Collection Time"});
+        m_logger[LogTypes::ERROR]       = Logging::TableLogger("./error_log.txt", 5, 35, {"Timestamp", "Error Message"});
     }
 
     FileScheduler::~FileScheduler() {
@@ -77,7 +79,7 @@ namespace Scheduler {
             
             std::string now = date::format("%F %T", std::chrono::system_clock::now());
             messages        = {now, std::to_string(id), "Ready", "0", "0"};
-            m_logger.log(messages);
+            m_logger[LogTypes::FILESCRAPER].log(messages);
             id++;
         }
     }
@@ -88,7 +90,7 @@ namespace Scheduler {
         for (auto& [id, scraper] : m_fileScrapers) {
             std::string now = date::format("%F %T", std::chrono::system_clock::now());
             messages = {now, std::to_string(id), "Working", "0", "0"};
-            m_logger.log(messages);
+            m_logger[LogTypes::FILESCRAPER].log(messages);
 
             auto start    = std::chrono::high_resolution_clock::now();
             bool timedOut = scraper.collect(timeout);
@@ -103,7 +105,7 @@ namespace Scheduler {
 
             now      = date::format("%F %T", std::chrono::system_clock::now());
             messages = {now, std::to_string(id), "Terminated", std::to_string(m_numberOfTimeOuts[id]), std::to_string(time)};
-            m_logger.log(messages);
+            m_logger[LogTypes::FILESCRAPER].log(messages);
 
             std::deque<File> output = scraper.getFiles(); 
             for (auto& file : output) {

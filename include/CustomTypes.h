@@ -42,9 +42,20 @@ struct File {
 // Enumeration SinkTypes
 /////////////////////////////////////////////////////////////
 
-enum class SinkType {
-    TXT,
-    CSV
+struct SinkTypes {
+    enum class Types {
+        TXT,
+        CSV
+    };
+
+    static const std::string toString(const Types& sinkType) {
+        switch(sinkType) {
+            case Types::TXT: return std::string("txt");
+            case Types::CSV: return std::string("csv");
+
+            default:         return std::string("");
+        }
+    }
 };
 
 #endif

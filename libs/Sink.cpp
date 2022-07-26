@@ -28,7 +28,7 @@ namespace Sinks {
         }
     }
 
-    SinkType Sink::getSinkType() const {
+    SinkTypes::Types Sink::getSinkType() const {
         return m_sinkType;
     }
 }

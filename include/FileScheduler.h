@@ -21,6 +21,14 @@
 
 namespace Scheduler {
     /////////////////////////////////////////////////////////////
+    // Logger Enum per Use-Case
+    /////////////////////////////////////////////////////////////
+    enum class LogTypes {
+        FILESCRAPER,
+        ERROR
+    };
+
+    /////////////////////////////////////////////////////////////
     // Interface Definition of the File Scheduler
     /////////////////////////////////////////////////////////////
 
@@ -64,11 +72,11 @@ namespace Scheduler {
 
             static FileScheduler* m_instance;
 
-            std::deque<Dir>                         m_registeredDirs;
-            std::map<int, Scraper::FileScraper>     m_fileScrapers;
-            std::map<SinkType, Sinks::Sink>         m_sinks;
-            std::map<int, int>                      m_numberOfTimeOuts;
-            Logging::TableLogger                    m_logger;
+            std::deque<Dir>                             m_registeredDirs;
+            std::map<int, Scraper::FileScraper>         m_fileScrapers;
+            std::map<SinkTypes::Types, Sinks::Sink>  m_sinks;
+            std::map<int, int>                          m_numberOfTimeOuts;
+            std::map<LogTypes, Logging::TableLogger>    m_logger;
     };
 }
 

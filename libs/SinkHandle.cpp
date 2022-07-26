@@ -14,7 +14,7 @@ namespace SinkHandles {
         return m_targetLocation;
     }
 
-    SinkType TXTSinkHandle::exposeSinkType() const {
+    SinkTypes::Types TXTSinkHandle::exposeSinkType() const {
         return m_sinkType;
     }
 
@@ -30,7 +30,7 @@ namespace SinkHandles {
         return m_targetLocation;
     }
 
-    SinkType CSVSinkHandle::exposeSinkType() const {
+    SinkTypes::Types CSVSinkHandle::exposeSinkType() const {
         return m_sinkType;
     }
 }

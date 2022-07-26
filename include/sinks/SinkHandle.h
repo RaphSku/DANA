@@ -15,7 +15,7 @@ namespace SinkHandles {
         public:
             virtual ~InterfaceSinkHandle() {}
             virtual std::string getTargetLocation() const = 0;
-            virtual SinkType exposeSinkType() const = 0;
+            virtual SinkTypes::Types exposeSinkType() const = 0;
     };
 
     /////////////////////////////////////////////////////////////
@@ -27,11 +27,11 @@ namespace SinkHandles {
             TXTSinkHandle(const std::string targetLocation);
 
             std::string getTargetLocation() const;
-            SinkType exposeSinkType() const;
+            SinkTypes::Types exposeSinkType() const;
 
         private:
-            std::string m_targetLocation;
-            SinkType    m_sinkType{SinkType::TXT};
+            std::string         m_targetLocation;
+            SinkTypes::Types m_sinkType{SinkTypes::Types::TXT};
     };
 
     /////////////////////////////////////////////////////////////
@@ -43,11 +43,11 @@ namespace SinkHandles {
             CSVSinkHandle(const std::string targetLocation);
 
             std::string getTargetLocation() const;
-            SinkType exposeSinkType() const;
+            SinkTypes::Types exposeSinkType() const;
 
         private:
-            std::string m_targetLocation;
-            SinkType    m_sinkType{SinkType::CSV};
+            std::string      m_targetLocation;
+            SinkTypes::Types m_sinkType{SinkTypes::Types::CSV};
     };
 }
 

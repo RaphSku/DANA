@@ -51,11 +51,11 @@ TEST_F(SinkTest, GetSinkType_S01) {
     Sinks::Sink txtSink(txtSinkHandle);
     Sinks::Sink csvSink(csvSinkHandle);
 
-    SinkType txtSinkType = txtSink.getSinkType();
-    SinkType csvSinkType = csvSink.getSinkType();
+    SinkTypes::Types txtSinkType = txtSink.getSinkType();
+    SinkTypes::Types csvSinkType = csvSink.getSinkType();
 
-    ASSERT_EQ(txtSinkType, SinkType::TXT);
-    ASSERT_EQ(csvSinkType, SinkType::CSV);
+    ASSERT_EQ(txtSinkType, SinkTypes::Types::TXT);
+    ASSERT_EQ(csvSinkType, SinkTypes::Types::CSV);
 
     SUCCEED();
 }

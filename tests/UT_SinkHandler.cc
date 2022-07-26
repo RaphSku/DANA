@@ -31,11 +31,11 @@ TEST_F(SinkHandlerTest, GetMethods_S01) {
     ASSERT_EQ(txtTargetLocation, "./");
     ASSERT_EQ(csvTargetLocation, "./test1");
 
-    SinkType txtSinkType = txtSinkHandle.exposeSinkType();
-    SinkType csvSinkType = csvSinkHandle.exposeSinkType();
+    SinkTypes::Types txtSinkType = txtSinkHandle.exposeSinkType();
+    SinkTypes::Types csvSinkType = csvSinkHandle.exposeSinkType();
 
-    ASSERT_EQ(txtSinkType, SinkType::TXT);
-    ASSERT_EQ(csvSinkType, SinkType::CSV);
+    ASSERT_EQ(txtSinkType, SinkTypes::Types::TXT);
+    ASSERT_EQ(csvSinkType, SinkTypes::Types::CSV);
 
     SUCCEED();
 }
