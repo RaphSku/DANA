@@ -31,6 +31,7 @@ class FileSchedulerTest : public ::testing::Test {
 };
 
 TEST_F(FileSchedulerTest, Initialisation_S01) {
+  /* Test whether the FileScheduler is a Singleton */
   auto fileScheduler = Scheduler::FileScheduler::getInstance();
 
   ASSERT_EQ(m_fileScheduler, fileScheduler);
@@ -38,6 +39,7 @@ TEST_F(FileSchedulerTest, Initialisation_S01) {
 }
 
 TEST_F(FileSchedulerTest, RegisterDirs_S01) {
+  /* Test whether directories are registered */
   Dir directory_1("./test1.txt");
   Dir directory_2("./test2.txt");
   Dir directory_3("./test3.txt");
@@ -49,6 +51,8 @@ TEST_F(FileSchedulerTest, RegisterDirs_S01) {
 }
 
 TEST_F(FileSchedulerTest, Run_S01) {
+  /* Test whether the deployed_filescrapers log file
+  contains all the relevant information */
   Dir directory(m_targetDirectory);
   std::vector<Dir> directories{directory};
 
@@ -81,6 +85,7 @@ TEST_F(FileSchedulerTest, Run_S01) {
 }
 
 TEST_F(FileSchedulerTest, RegisterSinks_S01) {
+  /* Test whether the sinks are registered */
   SinkHandles::TXTSinkHandle txtSinkHandler("./");
   SinkHandles::CSVSinkHandle csvSinkHandler("./");
   

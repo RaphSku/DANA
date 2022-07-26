@@ -20,8 +20,8 @@ include_directories(
 )
 
 add_executable(
-  UT_Run
-  ./tests/UT_Run.cc
+  T_Run
+  ./tests/T_Run.cc
   ./libs/FileScheduler.cpp
   ./libs/FileScraper.cpp
   ./libs/Logger.cpp
@@ -30,11 +30,11 @@ add_executable(
 )
 
 target_link_libraries(
-  UT_Run  
+  T_Run  
   gtest_main
 )
 
 include(GoogleTest)
 gtest_discover_tests(
-  UT_Run
+  T_Run
 )

@@ -32,12 +32,14 @@ class FileScraperTest : public ::testing::Test {
 };
 
 TEST_F(FileScraperTest, Initialisation_S01) {
+    /* Test the initialisation of the FileScraper */
     auto filescraper = Scraper::FileScraper(m_directory, m_id);
 
     SUCCEED();
 }
 
 TEST_F(FileScraperTest, RetrievingID_S01) {
+    /* Test if the id matches the set id */
     auto filescraper = Scraper::FileScraper(m_directory, m_id);
     int  id          = filescraper.getID();
 
@@ -46,6 +48,8 @@ TEST_F(FileScraperTest, RetrievingID_S01) {
 }
 
 TEST_F(FileScraperTest, Collection_S01) {
+    /* Test whether the collection scrapes the correct files with their
+    appropriate attributes like file suffix */
     auto filescraper = Scraper::FileScraper(m_directory, m_id);
 
     int timeout            = 1000;

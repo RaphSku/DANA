@@ -40,6 +40,9 @@ class PipelineTest : public ::testing::Test {
 };
 
 TEST_F(PipelineTest, Pipeline_S01) {
+    /* Test the whole pipeline, from getting the FileScheduler instance,
+    registering the directories, registering the sinks, and running
+    the deployment, collection and depositing of the scraped files */
     Dir fileDir(m_fileDirectory);
     
     SinkHandles::TXTSinkHandle txtSinkHandle(m_targetTxtDirectory);

@@ -33,6 +33,7 @@ class SinkTest : public ::testing::Test {
 };
 
 TEST_F(SinkTest, Initialisation_S01) {
+    /* Test if the Sink is initialiseable */
     SinkHandles::TXTSinkHandle txtSinkHandle(m_targetDirectory + "/../");
     SinkHandles::CSVSinkHandle csvSinkHandle(m_targetDirectory + "/../");
 
@@ -43,6 +44,7 @@ TEST_F(SinkTest, Initialisation_S01) {
 }
 
 TEST_F(SinkTest, GetSinkType_S01) {
+    /* Test if the exposed Sink Types match */
     SinkHandles::TXTSinkHandle txtSinkHandle(m_targetDirectory + "/../");
     SinkHandles::CSVSinkHandle csvSinkHandle(m_targetDirectory + "/../");
 
@@ -59,6 +61,7 @@ TEST_F(SinkTest, GetSinkType_S01) {
 }
 
 TEST_F(SinkTest, DepositFiles_S01) {
+    /* Check whether the Sinks correctly deposit the assigned files */
     SinkHandles::TXTSinkHandle txtSinkHandle(m_targetDirectory + "/../");
     SinkHandles::CSVSinkHandle csvSinkHandle(m_targetDirectory + "/../");
 

@@ -11,6 +11,7 @@ class SinkHandlerTest : public ::testing::Test {
 };
 
 TEST_F(SinkHandlerTest, Initialisation_S01) {
+    /* Test the initialisation of the SinkHandler */
     SinkHandles::TXTSinkHandle txtSinkHandle("./");
     SinkHandles::CSVSinkHandle csvSinkHandle("./test1");
 
@@ -18,6 +19,9 @@ TEST_F(SinkHandlerTest, Initialisation_S01) {
 }
 
 TEST_F(SinkHandlerTest, GetMethods_S01) {
+    /* Check whether the attributes are set correctly in
+    the SinkHandler, this is crucial since the Sinks will
+    rely on this information to be correct */
     SinkHandles::TXTSinkHandle txtSinkHandle("./");
     SinkHandles::CSVSinkHandle csvSinkHandle("./test1");
 

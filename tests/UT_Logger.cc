@@ -20,7 +20,8 @@ class TableLoggerTest : public ::testing::Test {
 };
 
 TEST_F(TableLoggerTest, Initialisation_S01) {
-    
+    /* Test if the logger is initialised correctly with its
+    designated header format */
     if (!std::filesystem::exists(m_currentPath)) {
         FAIL();
     }
@@ -48,6 +49,7 @@ TEST_F(TableLoggerTest, Initialisation_S01) {
 }
 
 TEST_F(TableLoggerTest, Logging_S01) {
+    /* Test if the logger logs the message correctly */
     m_tableLogger.log({"2022-08-12 0:247925", "0", "Ready", "100", "1257"});
 
     std::ifstream logFile(m_currentPath);
